@@ -11,7 +11,7 @@ pipeline {
 
     stage('Activate venv'){
 	    steps{
-	    		source polls_venv/bin/activate
+	    		sh 'source polls_venv/bin/activate'
       	    }
     }
 
