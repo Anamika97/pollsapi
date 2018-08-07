@@ -9,14 +9,9 @@ pipeline {
 	    }
 	}
 
-    stage('Activate venv'){
-	    steps{
-	    		sh 'source polls_venv/bin/activate'
-      	    }
-    }
-
     stage('Run django server'){
     	steps{
+    		sh 'pip install -r requirements.txt'
     		sh 'python manage.py runserver'
     	}
     }
