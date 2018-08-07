@@ -3,23 +3,31 @@ pipeline {
   stages {
     stage('Start Postgres server') {
 	    steps {
-	        sh 'docker start 5bd17760ac74'
-	    }
-
-	    steps{
-	      	sh 'docker attach 5bd17760ac74'
-	    }
-
-	    steps{
-	      	sh 'service postgresql restart'
+	        parallel("first": {
+                	sh 'docker start 5bd17760ac74'
+                },
+                "second": {
+                    sh 'docker attach 5bd17760ac74'
+                },
+                "third": {
+                	sh 'service postgresql restart'
+                }
+            )
 	    }
 	}
 
     stage('Activate venv'){
 	    steps{
-	    	sh 'cd polls_venv'
-	    	sh '. bin/activate'
-	    	sh 'cd ..'
+	    	parallel("first": {
+                	sh 'cd polls_venv'
+                },
+                "second": {
+                    sh '. bin/activate'
+                },
+                "third": {
+                	sh 'cd ..'
+                }
+            )
 	    }
     }
 
