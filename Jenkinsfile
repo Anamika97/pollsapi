@@ -5,7 +5,7 @@ pipeline {
 	    steps {
 	       
             	sh 'docker start 5bd17760ac74'           
-            	sh 'docker exec -it reverent_jackson service postgresql restart'
+            	sh 'docker exec -i reverent_jackson service postgresql restart'
                  
 	    }
 	}
