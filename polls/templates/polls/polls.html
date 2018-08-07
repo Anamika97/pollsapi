@@ -1,0 +1,112 @@
+{% extends 'polls/base.html' %}
+{% block title %}Polls{% endblock %}
+
+{% block body %}
+	<div class="container">
+		<div class="jumbotron">
+	  		<form action="/polls/" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
+				{% csrf_token %}
+				<fieldset>
+			    	<div class="form-group">
+			  			<label class="col-sm-2 control-label ">
+			      			Question
+			    		</label>
+			  			<div class="col-sm-10">
+			    			<input name="question" class="form-control" type="text">
+						</div>
+					</div>
+
+					<div class="form-actions">
+			        	<button class="btn btn-primary" id = "postreq"  style="float: right;" >POST</button>
+			        </div>
+			                          
+				</fieldset>
+			</form>
+	    </div>
+	</div>
+
+	
+	<div>
+
+		<ol id= 'polllist'>
+			
+			<h5><strong>Polls List</strong></h5>
+		
+		</ol>
+
+		<ul id='polldetails'>
+					
+		</ul>
+
+	</div>
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+    
+	    $(document).on('submit', '.form-horizontal', function(){	
+		    $.ajax({ 
+			    type: $(this).attr('method'), 
+			    url: this.action, 
+			    data: $(this).serialize(),
+			    context: this,
+			    success: function(data, status) {
+			        console.log(this.action);
+			        console.log($(this).serialize());
+			        listfunction();
+		    	}
+		    });
+		    
+		    console.log("success")
+		    return false;
+		});
+
+		function detailsfunction(id){
+		   	$.ajax({
+				type: 'GET',
+				url: 'http://localhost:8000/polls/' + id + '/',
+				data: '',
+				dataType: 'json',
+				success: function(data){
+				    console.log(data);
+					$("ul").empty();
+				    $("#polldetails").append('<h5><strong>' + data['question'] + '\'s Poll Details </strong></h5>');
+				    $("#polldetails").append('<li><label> ID : </label>' + data['id'] + '</li>');
+				    $("#polldetails").append('<li><label> Choices : </label>');
+		    		$.each(data['choices'], function( index, value ) {
+				    	$("#polldetails").append(data['choices'][index]['choice_text']+', ');
+					});
+					$("#polldetails").append('<li><label> Pulication date : </label>' + data['pub_date'] + '</li>');
+					$("#polldetails").append('<li><label> Created by : </label>' + data['username'] + '</li>');
+				}
+			});
+		}
+
+		$(document).ready(function(){
+			
+			listfunction();
+		
+		});
+
+		function listfunction(){
+			$.ajax({
+			  type: 'GET',
+			  url: 'http://localhost:8000/polls/',
+			  data: '',
+			  dataType: 'json',
+			  success: function(data){
+			    console.log(data);
+			    $("ol").empty();
+	    		$.each(data, function( index, value ) {
+	    			
+				  	$("#polllist").append('<div id = ' + data[index]['id'] + ' onclick = detailsfunction(this.id)><li>' + data[index]['question'] +' </li></div>');
+				});
+				
+			  }
+			});
+		}
+
+    </script>
+
+{% endblock %}

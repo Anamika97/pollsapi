@@ -1,0 +1,158 @@
+{% extends 'polls/base.html' %}
+{% block title %}Choices{% endblock %}
+
+{% block body %}
+	<div class="container">
+		<div class="jumbotron">
+	  		<form action="/choices/" method="POST" enctype="multipart/form-data" class="form-horizontal" novalidate>
+				{% csrf_token %}
+				<fieldset>
+
+					<div class="form-group">
+			    		<label class="col-sm-2 control-label">
+			      			Poll
+			    		</label>
+			 			<div class="col-sm-10">
+			    			<select id="dropdown" name="poll"></select>
+			  			</div>
+					</div>
+
+			    	<div class="form-group">
+			  			<label class="col-sm-2 control-label ">
+			      			Choice
+			    		</label>
+			  			<div class="col-sm-10">
+			    			<input name="choice_text" class="form-control" type="text">
+						</div>
+					</div>
+
+					<div class="form-actions">
+			        	<button class="btn btn-primary" id = "postreq"  style="float: right;" >CREATE</button>
+			        </div>
+			                          
+				</fieldset>
+			</form>
+	    </div>
+	</div>
+
+	
+	<div>
+
+		<ol id= 'choicelist'>
+			
+			
+		
+		</ol>
+
+		<ul id='choicedetails'>
+					
+		</ul>
+
+	</div>
+
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script type="text/javascript">
+    
+	    $(document).on('submit', '.form-horizontal', function(){	
+		    $.ajax({ 
+			    type: $(this).attr('method'), 
+			    url: this.action, 
+			    data: $(this).serialize(),
+			    context: this,
+			    success: function(data, status) {
+			        console.log(this.action);
+			        console.log($(this).serialize());
+			        listfunction($('#dropdown').val());
+			    }
+		    });
+		    
+		    console.log("success")
+		    return false;
+		});
+
+		function detailsfunction(id){
+		   	$.ajax({
+			  type: 'GET',
+			  url: 'http://localhost:8000/choices/' + id + '/',
+			  data: '',
+			  dataType: 'json',
+			  success: function(data){
+			    console.log(data);
+				$("ul").empty();
+			    $("#choicedetails").append('<h5><strong>' + data['choice_text'] + '\'s Choice Details </strong></h5>');
+			    $("#choicedetails").append('<li><label> ID : </label>' + data['id'] + '</li>');
+			    $("#choicedetails").append('<li><label> Poll : </label>' + data['question'] + '</li>');
+			    $("#choicedetails").append('<li><label> Vote count : </label>' + data['votes']['length'] + '</li>');
+				
+			  }
+			});
+		}
+
+		$(document).ready(function(){
+			var poll = $('#dropdown').val();
+			listfunction(poll);
+		
+		});
+
+		function listfunction(poll){
+			$.ajax({
+	            type: 'GET',
+	            url: 'http://localhost:8000/polls/' + poll + '/',
+	            data: '',
+				dataType: 'json',
+	            success: function(data)
+	            {	
+	            	$("ol").empty();
+	            	$("ul").empty();
+	            	$("#choicelist").append('<h5><strong>Choices List</strong></h5>');
+	            	
+	                if(data != '')
+			        {
+			            $.each(data['choices'], function(index, value) {
+		            		$("#choicelist").append('<div id = ' + data['choices'][index]['id'] + ' onclick = detailsfunction(this.id)><li>' + data['choices'][index]['choice_text'] +' </li></div>');
+			            });
+			        }
+			        console.log("success");
+	             
+	            }
+	        });
+		}
+
+		$.ajax({
+            type: 'GET',
+            url: 'http://localhost:8000/polls/',
+            data: '',
+			dataType: 'json',
+            success: function(data)
+            {
+            	console.log(data);
+                buildDropdown(
+                    data,
+                    $('#dropdown') 
+                );
+            }
+        });
+		
+	    function buildDropdown(result, dropdown)
+	    {
+	        dropdown.html('');
+	        dropdown.append('<option value="Select Poll">Select Poll</option>');
+	        if(result != '')
+	        {
+	            $.each(result, function(index, value) {
+            		dropdown.append('<option value=' + result[index]['id'] + '>' + result[index]['question'] + '</option>');
+	            });
+	        }
+	    }
+
+	    $(document).on("change", '#dropdown', function(e) {
+            var poll = $(this).val();
+            listfunction(poll);
+
+		});
+		
+    </script>
+
+{% endblock %}
