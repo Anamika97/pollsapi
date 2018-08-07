@@ -11,7 +11,6 @@ pipeline {
 
     stage('Run django server'){
     	steps{
-    		sh 'sudo pip install -r requirements.txt'
     		sh 'python manage.py runserver'
     	}
     }
