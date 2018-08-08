@@ -4,8 +4,7 @@ pipeline {
 	stages{
 		stage('Package polls app into a pip package'){
 			steps{
-				sh 'cd polls'
-				sh 'python setup.py sdist'
+				sh 'python polls/setup.py sdist'
 			}
 		}
 
