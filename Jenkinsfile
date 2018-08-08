@@ -14,16 +14,6 @@ pipeline {
 				sh 'pip install --user polls/dist/polls-0.1.tar.gz'
 			}
 		}
-	
-	
-		stage('Commit the packaged web-app'){
-			steps{
-				sh 'git add .'
-				sh 'git commit -m "polls package updated"'
-				sh 'git push origin master'
-			}
-		}
-	
 
 	    stage('Start Postgres server') {
 		    steps {
