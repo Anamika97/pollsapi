@@ -8,18 +8,15 @@ pipeline {
 				sh 'python setup.py sdist'
 			}
 		}
-	}
 
-	stages{
 		stage('Install polls package'){
 			steps{
 
 				sh 'pip install --user polls/dist/polls-0.1.tar.gz'
 			}
 		}
-	}
 	
-	stages{
+	
 		stage('Commit the packaged web-app'){
 			steps{
 				sh 'git add .'
@@ -27,9 +24,8 @@ pipeline {
 				sh 'git push origin master'
 			}
 		}
-	}
+	
 
-	stages {
 	    stage('Start Postgres server') {
 		    steps {
 		       
@@ -37,12 +33,13 @@ pipeline {
 	                 
 		    }
 		}
-	}
+	
 
-    stage('Run django server'){
-    	steps{
-    		sh 'python manage.py runserver'
-    	}
+	    stage('Run django server'){
+	    	steps{
+	    		sh 'python manage.py runserver'
+	    	}
+	    }
     }
   
 }
